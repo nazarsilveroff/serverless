@@ -1,8 +1,20 @@
+org: nazariy
+app: aws-node-express-dynamodb-api
 service: aws-node-express-dynamodb-api
 frameworkVersion: '3'
 
 custom:
   tableName: 'users-table-${sls:stage}'
+  dynamodb:
+    stages:
+      - dev
+    port: 8000
+    start:
+      migrate: true
+      inMemory: true
+    migration:
+      dir: offline/migrations
+
 
 provider:
   name: aws
@@ -42,3 +54,11 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.tableName}
+
+plugins:
+    - serverless-offline
+    - serverless-dynamodb-local
+    - serverless-webpack
+
+package:
+  individually: true

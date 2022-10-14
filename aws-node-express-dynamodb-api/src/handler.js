@@ -8,7 +8,15 @@ const app = express();
 app.use(express.json());
 
 const USERS_TABLE = process.env.USERS_TABLE;
-const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
+
+
+const dynamoDbClientParams = {};
+if (process.env.IS_OFFLINE) {
+  dynamoDbClientParams.region = 'localhost'
+  dynamoDbClientParams.endpoint = 'http://localhost:8000'
+}
+const dynamoDbClient = new AWS.DynamoDB.DocumentClient(dynamoDbClientParams);
+
 const userId = uuidv4()
 
 app.get("/users", async function (req, res) {
@@ -24,7 +32,7 @@ app.get("/users", async function (req, res) {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({error: "Could not retrieve users"});
+    res.status(500).json({error: "Could not retrieve user"});
   }
 });
 
@@ -137,4 +145,6 @@ app.use((req, res, next) => {
 });
 
 
-module.exports.handler = serverless(app);
+module.exports = {
+  handler: serverless(app)
+};
