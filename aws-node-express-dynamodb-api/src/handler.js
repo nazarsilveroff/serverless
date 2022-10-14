@@ -21,6 +21,7 @@ const userId = uuidv4()
 
 app.get("/users", async function (req, res) {
   try {
+    // throw new Error('new ERROR')
     const {Items} = await dynamoDbClient.scan({TableName: USERS_TABLE}).promise();
     if (Items) {
       const users = Items;
